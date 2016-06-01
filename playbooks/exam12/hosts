@@ -1,0 +1,1 @@
+testserver ansible_ssh_host=ec2-54-169-131-130.ap-southeast-1.compute.amazonaws.com ansible_ssh_port=22

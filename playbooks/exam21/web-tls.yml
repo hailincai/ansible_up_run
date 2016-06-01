@@ -1,0 +1,38 @@
+#notify module will call coresponding handlers
+#handler will be run once after all tasks finish
+#also if none of task has state changed, notify will not work
+#better restart the service at the end of all the tasks
+- name: Configure webserver with nginx and tls
+  hosts: webservers
+  sudo: true
+  vars:
+    key_file: /etc/nginx/ssl/nginx.key
+    cert_file: /etc/nginx/ssl/nginx.crt
+    conf_file: /etc/nginx/sites-available/default
+    server_name: ec2-54-169-156-173.ap-southeast-1.compute.amazonaws.com
+  tasks:
+    - name: upgrade the apt
+      apt: update_cache=yes upgrade=yes
+    - name: Install nginx
+      apt: name=nginx update_cache=yes cache_valid_time=3600
+    - name: create directories for ssl certificates
+      file: path=/etc/nginx/ssl state=directory
+    - name: copy TLS key
+      copy: src=files/nginx.key dest={{ key_file }} owner=root mode=0600
+      notify: restart nginx
+    - name: copy TLS certificate
+      copy: src=files/nginx.crt dest={{ cert_file }}
+      notify: restart nginx
+    - name: copy nginx conf file
+      template: src=templates/nginx.conf.j2 dest={{ conf_file }}
+      notify: restart nginx
+    - name: enable configuration
+      file: dest=/etc/nginx/sites-enabled/default src=/etc/nginx/sites-available/default state=link
+      notify: restart nginx
+    - name: copy index.html
+      template: src=templates/index.html.j2 dest=/usr/share/nginx/html/index.html mode=0644
+    - name: final restart nginx
+      service: name=nginx state=restarted
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
