@@ -1,0 +1,7 @@
+[webservers]
+webserver1 ansible_ssh_host=ec2-52-77-247-100.ap-southeast-1.compute.amazonaws.com ansible_ssh_port=22
+webserver2 ansible_ssh_host=ec2-52-221-241-68.ap-southeast-1.compute.amazonaws.com ansible_ssh_port=22
+
+[ubuntu]
+webserver1
+webserver2

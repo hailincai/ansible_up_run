@@ -1,0 +1,8 @@
+- name: show return value of command modile
+  hosts: webserver1
+  tasks:
+    - name: capture output of id command
+      command: id -un
+      ignore_errors: true
+      register: login
+    - debug: msg="Logged in as user {{ login.stdout }}"

@@ -1,0 +1,6 @@
+- name: print out ec2 instance facts
+  hosts: webserver1
+  tasks:
+    - name: fetch ec2 facts
+      ec2_facts:
+    - debug: var=ansible_ec2_instance_id
